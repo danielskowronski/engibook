@@ -1,0 +1,10 @@
+{
+	"app_name": "engibook",
+	"base_url": "http://localhost:9999",
+	"port": 9999,
+	"verbose": false,
+	"static_dir": "static",
+	"view_dir": "views",
+	"database": "sqlite3",
+	"database_conn": "database.sqlite"
+}
