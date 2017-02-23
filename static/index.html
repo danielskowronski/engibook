@@ -37,6 +37,12 @@
 	</div></div>
 
 	<div id="main">
+        <form class="pure-form">
+            <input id="searchForm" class="pure-input-1-3" type="text" placeholder="search term"> 
+            <input id="regexSearchEnabled" type="checkbox"> regex
+   
+        </form>
+
 		<div class="header">
 			<h1 id="title">mode selected</h1>
 			<h2 id="descr">few words about this mode</h2>
@@ -69,6 +75,22 @@ function filterByNotebook(id){
     ;
  
 
+}
+function filterByString(serach){
+    $(".noteEntry").hide();
+    $.each( $(".noteEntry"), function( key, val ) {
+        var body = $(val).html()
+        if ($("#regexSearchEnabled").prop('checked')){
+            if (body.match(serach)){
+                $(val).show()
+            }
+        }       
+        else {
+            if (body.indexOf(serach)!=-1){
+                $(val).show()
+            }
+        }
+    });
 }
 function expandOrCollapseNote(caller){
     if (!$(caller).prop("data-expanded") || $(caller).prop("data-expanded") =="false"){
@@ -123,6 +145,15 @@ function pageReloaded(){
 
 $(function() { pageReloaded(); });
 window.onhashchange = pageReloaded;
+
+$("form").bind("input change propertychange", function (evt) {
+    if (window.event && event.type == "propertychange" && event.propertyName != "value")
+        return;
+    window.clearTimeout($(this).data("timeout"));
+    $(this).data("timeout", setTimeout(function () {
+        filterByString($('#searchForm').val())
+    }, 100));
+});
 </script>
 
 	
