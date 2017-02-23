@@ -1,3 +1,15 @@
 html, body{
 	font-family: "Ubuntu Mono";
 }
+
+.noteEntry{
+	border: 1px solid #aaa;
+	margin-top: -1px;
+	max-height: 50px;
+    overflow:auto;
+    overflow-x:hidden;
+    overflow-y:hidden;
+}
+.noteTitle {
+	font-size: 22px;
+}

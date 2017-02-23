@@ -5,10 +5,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>EngiBook</title>
 	<link href="https://fonts.googleapis.com/css?family=Ubuntu Mono:400,700" rel="stylesheet">
-	<script src="assets/jquery-3.1.1.min.js"></script>
+    <script src="assets/jquery-3.1.1.min.js"></script>
+	<script src="assets/pace.min.js"></script>
 	<link rel="stylesheet" href="assets/pure-min.css">
 	<link rel="stylesheet" href="assets/side-menu.css">
-	<link rel="stylesheet" href="assets/master.css">
+    <link rel="stylesheet" href="assets/master.css">
+	<link rel="stylesheet" href="assets/pace.css">
 </head>
 
 <body>
@@ -23,7 +25,7 @@
 
 		notebooks:
 		<div id="notebooks">
-			<!--<li class="pure-menu-item"><a href="#notebook/$id" class="pure-menu-link">$title</a></li>-->
+            <!--<li class="pure-menu-item"><a href="#notebook/$id" class="pure-menu-link">$title</a></li>-->
 		</div>
 
 		system:
@@ -41,6 +43,7 @@
 		</div>
 
 		<div class="content">
+            
 		</div>
 	</div>
 </div>
@@ -53,26 +56,54 @@ function updateTitle(title, descr){
     $("#title").html(title)
     $("#descr").html(descr)
 }
+function filterByNotebook(id){
+    window.location.hash = "#notebook"
+    $(".content").html();
+    if (id>=0){
+        updateTitle(database.notebooks[id].title,"")
+    }
+    else {
+        updateTitle("%all% notes index","")
+    }
+
+    ;
+ 
+
+}
+function expandOrCollapseNote(caller){
+    if (!$(caller).prop("data-expanded") || $(caller).prop("data-expanded") =="false"){
+        $(caller).prop("data-expanded","true")
+        $(caller).css("max-height","none")
+    }
+    else {
+        $(caller).prop("data-expanded","false")
+        $(caller).css("max-height","50px")
+    }
+}
 function pageReloaded(){
 	var action = window.location.hash.split("/")[0];
-	$.getJSON( "mock/data.json", function( data ) {
+    Pace.start();
+	$.getJSON( "mock/data_big.json", function( data ) {
         database.notebooks = data.notebooks;
         $("#notebooks").html("")
+        $("#notebooks").append('<li class="pure-menu-item"><a href="javascript:filterByNotebook(-1)" class="pure-menu-link">%all%</a></li>')
         $.each( database.notebooks, function( key, val ) {
-            $("#notebooks").append('<li class="pure-menu-item"><a href="#" class="pure-menu-link">'+val.title+'</a></li>')
+            $("#notebooks").append('<li class="pure-menu-item"><a href="javascript:filterByNotebook('+key+')"  class="pure-menu-link">'+val.title+'</a></li>')
         });
         
         database.notes = data.notes;
-        //TODO filter data
-        //TODO append data
+        $.each( database.notes, function( key, val ) {
+            $(".content").append('<div class="noteEntry" onClick="expandOrCollapseNote(this)">'+
+                '<div class="noteTitle">'+val.title+'</div>'+
+                '<div class="noteBody">'+val.body+'</div>'+
+                '</div>'
+            )
+        });
+        Pace.stop();
+
 	});
 
 	switch (action){
-	case "#notebook":
-		var notebookId = window.location.hash.split("/")[1];
-		var notebookName = database.notebooks[notebookId].title;
-		updateTitle(notebookName,"")
-		break;
 	case "#trash"://TODO 
 		updateTitle("trash - not implemented","shows all notes")
 		break;
@@ -84,9 +115,10 @@ function pageReloaded(){
         $(".content").html("notes (markdown/text entities with titles) belongs to notebooks<br />you can filter notes by notebooks or search by substring or regex")
         break;              
 	default:
-		updateTitle("all notes index","")
 		break;
 	}
+
+    filterByNotebook(-1);
 }
 
 $(function() { pageReloaded(); });
