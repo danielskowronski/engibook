@@ -1,85 +1,98 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EngiBook</title>
-    <script src="assets/jquery-3.1.1.min.js"></script>
-    <link rel="stylesheet" href="assets/pure-min.css">
-    <link rel="stylesheet" href="assets/side-menu.css">
-    <link rel="stylesheet" href="assets/master.css">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>EngiBook</title>
+	<link href="https://fonts.googleapis.com/css?family=Ubuntu Mono:400,700" rel="stylesheet">
+	<script src="assets/jquery-3.1.1.min.js"></script>
+	<link rel="stylesheet" href="assets/pure-min.css">
+	<link rel="stylesheet" href="assets/side-menu.css">
+	<link rel="stylesheet" href="assets/master.css">
 </head>
 
 <body>
 <div id="layout">
-    <a href="#menu" id="menuLink" class="menu-link"><span></span></a>
+	<a href="#menu" id="menuLink" class="menu-link"><span></span></a>
 
-    <div id="menu"><div class="pure-menu">
-    <a class="pure-menu-heading" href="#">EngiBook</a>
+	<div id="menu"><div class="pure-menu">
+	<a class="pure-menu-heading" href="#">EngiBook</a>
 
-    <ul class="pure-menu-list">
+	<ul class="pure-menu-list">
+		<!--<li class="pure-menu-item"><a href="#tags" class="pure-menu-link">tags</a></li> TODO-->
 
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link">tags</a></li>
+		notebooks:
+		<div id="notebooks">
+			<!--<li class="pure-menu-item"><a href="#notebook/$id" class="pure-menu-link">$title</a></li>-->
+		</div>
 
-        notebooks:
-        <div id="notebooks">
-            <li class="pure-menu-item"><a href="#" class="pure-menu-link">queries</a></li>
-            <li class="pure-menu-item"><a href="#" class="pure-menu-link">oneliners</a></li>
-            <li class="pure-menu-item"><a href="#" class="pure-menu-link">configs</a></li>
-            <li class="pure-menu-item"><a href="#" class="pure-menu-link">workflows</a></li>
-        </div>
+		system:
+		<li class="pure-menu-item"><a href="#notebooks" class="pure-menu-link">vi notebooks</a></li>
+		<!--<li class="pure-menu-item"><a href="#" class="pure-menu-link">vi general</a></li> TODO-->
+		<li class="pure-menu-item"><a href="#man" class="pure-menu-link">man</a></li>
 
-        system:
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link">vi notebooks</a></li>
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link">vi general</a></li>
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link">man</a></li>
+	</ul>
+	</div></div>
 
-    </ul>
-    </div></div>
+	<div id="main">
+		<div class="header">
+			<h1 id="title">mode selected</h1>
+			<h2 id="descr">few words about this mode</h2>
+		</div>
 
-    <div id="main">
-        <div class="header">
-            <h1 id="title">mode selected</h1>
-            <h2 id="descr">few words about this mode</h2>
-        </div>
-
-        <div class="content">
-        </div>
-    </div>
+		<div class="content">
+		</div>
+	</div>
 </div>
 
 <script src="assets/ui.js"></script>
 <script>
-function getApiData(chunk){
-    return {"key":"value"};
-}
+var database = {notebooks:[],notes:[]}; //locally laoded database
+
 function updateTitle(title, descr){
     $("#title").html(title)
     $("#descr").html(descr)
 }
 function pageReloaded(){
-    var action = window.location.hash
-    switch (action){
-    case "trash":
-        updateTitle("trash","shows all notes")
-        notebooks = getApiData("notebooks");
-        notes     = getApiData("notesAll");
-        break;
-    case "notebooks":
-        updateTitle("vi notebooks","manages all notebooks, even deleted")
-        notebooks = getApiData("notebooksAll");
-        break;
-    default:
-        updateTitle("notes index","")
-        notebooks = getApiData("notebooks");
-        notes     = getApiData("notes");
-        break;
-    }
+	var action = window.location.hash.split("/")[0];
+	$.getJSON( "mock/data.json", function( data ) {
+        database.notebooks = data.notebooks;
+        $("#notebooks").html("")
+        $.each( database.notebooks, function( key, val ) {
+            $("#notebooks").append('<li class="pure-menu-item"><a href="#" class="pure-menu-link">'+val.title+'</a></li>')
+        });
+        
+        database.notes = data.notes;
+        //TODO filter data
+        //TODO append data
+	});
+
+	switch (action){
+	case "#notebook":
+		var notebookId = window.location.hash.split("/")[1];
+		var notebookName = database.notebooks[notebookId].title;
+		updateTitle(notebookName,"")
+		break;
+	case "#trash"://TODO 
+		updateTitle("trash - not implemented","shows all notes")
+		break;
+	case "#notebooks": //TODO: invent better route name
+		updateTitle("vi notebooks","manages all notebooks, even deleted")
+		break;      
+    case "#man": //TODO: invent better route name
+        updateTitle("man engibook","basic help")
+        $(".content").html("notes (markdown/text entities with titles) belongs to notebooks<br />you can filter notes by notebooks or search by substring or regex")
+        break;              
+	default:
+		updateTitle("all notes index","")
+		break;
+	}
 }
 
 $(function() { pageReloaded(); });
+window.onhashchange = pageReloaded;
 </script>
 
-    
+	
 </body>
 </html>

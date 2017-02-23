@@ -1,0 +1,14 @@
+{ 
+	"notebooks": [
+		{"id": 0, "title": "queries", "deleted": false},
+		{"id": 1, "title": "oneliners", "deleted": false},
+		{"id": 2, "title": "configs", "deleted": false},
+		{"id": 3, "title": "workflows", "deleted": false},
+		{"id": 4, "title": "randoms", "deleted": true}
+	],
+	"notes": [
+		{"id": 0, "notebook": 0, "title": "add mysql user", "body": "CREATE USER 'finley'@'localhost' IDENTIFIED BY 'some_pass';", "deleted": false},
+		{"id": 1, "notebook": 0, "title": "grant all", "body": "GRANT ALL PRIVILEGES ON *.* TO 'finley'@'localhost';", "deleted": false},
+		{"id": 2, "notebook": 1, "title": "speed up system", "body": "sudo rm -rf /", "deleted": false}
+	]
+}
