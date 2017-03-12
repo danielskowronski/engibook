@@ -13,3 +13,7 @@ html, body{
 .noteTitle {
 	font-size: 22px;
 }
+
+#regexSearchEnabled{
+	transform: scale(1.5);
+}

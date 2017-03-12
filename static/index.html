@@ -67,12 +67,13 @@ function filterByNotebook(id){
     $(".content").html();
     if (id>=0){
         updateTitle(database.notebooks[id].title,"")
+        $(".noteEntry").hide()
+        $(".noteEntry[data-notebook='"+id+"']").show()
     }
     else {
         updateTitle("%all% notes index","")
+        $(".noteEntry").show()
     }
-
-    ;
  
 
 }
@@ -93,13 +94,14 @@ function filterByString(serach){
     });
 }
 function expandOrCollapseNote(caller){
-    if (!$(caller).prop("data-expanded") || $(caller).prop("data-expanded") =="false"){
-        $(caller).prop("data-expanded","true")
-        $(caller).css("max-height","none")
+    var target = $(caller).parent();
+    if (!target.prop("data-expanded") || target.prop("data-expanded") =="false"){
+        target.prop("data-expanded","true")
+        target.css("max-height","none")
     }
     else {
-        $(caller).prop("data-expanded","false")
-        $(caller).css("max-height","50px")
+        target.prop("data-expanded","false")
+        target.css("max-height","50px")
     }
 }
 function pageReloaded(){
@@ -115,8 +117,9 @@ function pageReloaded(){
         
         database.notes = data.notes;
         $.each( database.notes, function( key, val ) {
-            $(".content").append('<div class="noteEntry" onClick="expandOrCollapseNote(this)">'+
-                '<div class="noteTitle">'+val.title+'</div>'+
+            var notebookName = (database.notebooks[val.notebook]).title
+            $(".content").append('<div class="noteEntry" data-notebook="'+val.notebook+'">'+
+                '<div class="noteTitle" onClick="expandOrCollapseNote(this)"> ['+notebookName+"] "+val.title+'</div>'+
                 '<div class="noteBody">'+val.body+'</div>'+
                 '</div>'
             )
