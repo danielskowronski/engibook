@@ -22,6 +22,8 @@
 
 	<ul class="pure-menu-list">
 		<!--<li class="pure-menu-item"><a href="#tags" class="pure-menu-link">tags</a></li> TODO-->
+        <li class="pure-menu-item"><a href="#editNote" class="pure-menu-link">touch note</a></li>
+        
 
 		notebooks:
 		<div id="notebooks">
@@ -119,7 +121,8 @@ function pageReloaded(){
         $.each( database.notes, function( key, val ) {
             var notebookName = (database.notebooks[val.notebook]).title
             $(".content").append('<div class="noteEntry" data-notebook="'+val.notebook+'">'+
-                '<div class="noteTitle" onClick="expandOrCollapseNote(this)"> ['+notebookName+"] "+val.title+'</div>'+
+                '<div class="noteTitle" onClick="expandOrCollapseNote(this)"> ['+notebookName+"] "+val.title+
+                '<a href="javascript:location.href=\'#editNote/'+key+'\'">[edit note]</a></div>'+
                 '<div class="noteBody">'+val.body+'</div>'+
                 '</div>'
             )
@@ -132,6 +135,10 @@ function pageReloaded(){
 	case "#trash"://TODO 
 		updateTitle("trash - not implemented","shows all notes")
 		break;
+    case "#editNote":
+        updateTitle("vi note","add/edit note")
+        $(".content").html("form here")
+        break;
 	case "#notebooks": //TODO: invent better route name
 		updateTitle("vi notebooks","manages all notebooks, even deleted")
 		break;      
