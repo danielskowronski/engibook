@@ -46,14 +46,19 @@ func (t *Note) GetOneNote() {
 func (t *Note) Modify() {
 	Note := &models.Note{}
 	NoteID := t.Ctx.Params["id"]
-	ID, err := strconv.Atoi(NoteID)
-	if err != nil {
-		t.Ctx.Data["Message"] = err.Error()
-		t.Ctx.Template = "error"
-		t.HTML(http.StatusInternalServerError)
-		return
+	if NoteID=="new" {
+
+	} else {
+		ID, err := strconv.Atoi(NoteID)
+		if err != nil {
+			t.Ctx.Data["Message"] = err.Error()
+			t.Ctx.Template = "error"
+			t.HTML(http.StatusInternalServerError)
+			return
+		}
+		t.Ctx.DB.Where("id = ?", ID).Find(&Note)
 	}
-	t.Ctx.DB.Where("id = ?", ID).Find(&Note)
+	
 	req := t.Ctx.Request()
 	_ = req.ParseForm()
 	Note.Body=req.PostForm["note[body]"][0]
