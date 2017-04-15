@@ -51,9 +51,19 @@
 			<h2 id="descr">few words about this mode</h2>
 		</div>
 
-		<div class="content">
+		<div id="content" class="content">
             
 		</div>
+
+        <div id="noteform" class="content">
+            <button onClick="saveNote()">Save!</button>
+            <table border=0>
+                <tr><td>Title:</td><td><input type="text" id="noteform-title" size="60" /></td></tr>
+                <tr><td>Notebook:</td><td><select id="noteform-notebook"></select></td></tr>
+                <tr><td style="vertical-align: top">Body:</td><td><textarea id="noteform-body" cols="59" rows="10"></textarea></td></tr>
+                <tr><td style="vertical-align: top">Preview:</td><td><div id="noteform-preview"></div></td></tr>
+            </table>
+        </div>
 	</div>
 </div>
 
@@ -61,13 +71,27 @@
 <script>
 var database = {notebooks:[],notes:[]}; //locally laoded database
 
+function saveNote(){
+    var hash = window.location.hash.split("/")
+    if (hash.length<2) return;
+    id=hash[1];
+
+    $.post( "mock/update", { 'note': {
+        'id':id, 
+        'title': $("#noteform-title").val(),
+        'notebook': $("#noteform-notebook").val(),
+        'body': $("#noteform-body").val()
+    } } );
+
+}
+
 function updateTitle(title, descr){
     $("#title").html(title)
     $("#descr").html(descr)
 }
 function filterByNotebook(id){
-    window.location.hash = "#notebook"
-    $(".content").html();
+    window.location.hash = "#notes"
+    $("#content").html();
     if (id>=0){
         updateTitle(database.notebooks[id].title,"")
         $(".noteEntry").hide()
@@ -107,10 +131,39 @@ function expandOrCollapseNote(caller){
         target.css("max-height","50px")
     }
 }
+
+var converter = new showdown.Converter();
+converter.setOption('simplifiedAutoLink', 'true');
+converter.setOption('strikethrough', 'true');
+converter.setOption('simpleLineBreaks', 'true');
+showdown.setFlavor('github');
+
 function pageReloaded(){
-    var converter = new showdown.Converter();
+    $("#noteform").hide()
 
 	var action = window.location.hash.split("/")[0];
+    switch (action){
+        case "#trash"://TODO 
+            updateTitle("trash - not implemented","shows all notes")
+            break;
+        case "#editNote":
+            updateTitle("vi note","add/edit note")
+            $("#content").html("")
+            $("#noteform").show()
+            break;
+        case "#notebooks": //TODO: invent better route name
+            updateTitle("vi notebooks","manages all notebooks, even deleted")
+            break;      
+        case "#man": //TODO: invent better route name
+            updateTitle("man engibook","basic help")
+            $("#content").html("notes (markdown/text entities with titles) belongs to notebooks<br />you can filter notes by notebooks or search by substring or regex")
+            break;              
+        default:
+            window.location.hash = "#notes"
+            filterByNotebook(-1);
+            break;
+    }
+
     Pace.start();
 	$.getJSON( "mock/data.json", function( data ) {
         database.notebooks = data.notebooks;
@@ -118,43 +171,24 @@ function pageReloaded(){
         $("#notebooks").append('<li class="pure-menu-item"><a href="javascript:filterByNotebook(-1)" class="pure-menu-link">%all%</a></li>')
         $.each( database.notebooks, function( key, val ) {
             $("#notebooks").append('<li class="pure-menu-item"><a href="javascript:filterByNotebook('+key+')"  class="pure-menu-link">'+val.title+'</a></li>')
+            $("#noteform-notebook").append('<option value='+key+'>'+val.title+'</option>')
         });
         
         database.notes = data.notes;
-        $.each( database.notes, function( key, val ) {
-            var notebookName = (database.notebooks[val.notebook]).title
-            $(".content").append('<div class="noteEntry" data-notebook="'+val.notebook+'">'+
-                '<div class="noteTitle" onClick="expandOrCollapseNote(this)"> ['+notebookName+"] "+val.title+
-                '<a href="javascript:location.href=\'#editNote/'+key+'\'">[edit note]</a></div>'+
-                '<div class="noteBody">'+converter.makeHtml(val.body)+'</div>'+
-                '</div>'
-            )
-        });
+        if (window.location.hash == "#notes") {
+            $.each( database.notes, function( key, val ) {
+                var notebookName = (database.notebooks[val.notebook]).title
+                $("#content").append('<div class="noteEntry" data-notebook="'+val.notebook+'">'+
+                    '<div class="noteTitle" onClick="expandOrCollapseNote(this)"> ['+notebookName+"] "+val.title+
+                    '<a href="#editNote/'+key+'">[edit note]</a></div>'+
+                    '<div class="noteBody">'+converter.makeHtml(val.body)+'</div>'+
+                    '</div>'
+                )
+            });
+        }
+
         Pace.stop();
-
 	});
-
-	switch (action){
-	case "#trash"://TODO 
-		updateTitle("trash - not implemented","shows all notes")
-		break;
-    case "#editNote":
-        updateTitle("vi note","add/edit note")
-        $(".content").html("form here")
-        break;
-	case "#notebooks": //TODO: invent better route name
-		updateTitle("vi notebooks","manages all notebooks, even deleted")
-		break;      
-    case "#man": //TODO: invent better route name
-        updateTitle("man engibook","basic help")
-        $(".content").html("notes (markdown/text entities with titles) belongs to notebooks<br />you can filter notes by notebooks or search by substring or regex")
-        break;              
-	default:
-		break;
-	}
-
-    filterByNotebook(-1);
-
     
 }
 
@@ -167,6 +201,15 @@ $("form").bind("input change propertychange", function (evt) {
     window.clearTimeout($(this).data("timeout"));
     $(this).data("timeout", setTimeout(function () {
         filterByString($('#searchForm').val())
+    }, 100));
+});
+
+$("#noteform-body").bind("input change propertychange", function (evt) {
+    if (window.event && event.type == "propertychange" && event.propertyName != "value")
+        return;
+    window.clearTimeout($(this).data("timeout"));
+    $(this).data("timeout", setTimeout(function () {
+        $("#noteform-preview").html(converter.makeHtml($("#noteform-body").val()))
     }, 100));
 });
 </script>
