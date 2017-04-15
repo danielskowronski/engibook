@@ -18,8 +18,10 @@ func main() {
 	}
 
 	app.Model.Register(&models.Note{})
+	app.Model.Register(&models.Notebook{})
 	app.Model.AutoMigrateAll()
 	app.AddController(c.NewNote)
+	app.AddController(c.NewNotebook)
 
 	port := fmt.Sprintf(":%d", app.Config.Port)
 	app.Log.Info("staring server on port", port)

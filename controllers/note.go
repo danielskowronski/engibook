@@ -8,7 +8,7 @@ import (
 	"../models"
 )
 
-var decoder = schema.NewDecoder()
+var noteDecoder = schema.NewDecoder()
 
 type Note struct {
 	controller.BaseController
@@ -24,7 +24,13 @@ func (t *Note) GetAll() {
 	t.Ctx.DB.Order("created_at desc").Find(&notes)
 	t.Ctx.Data["List"] = notes[:len(notes)-1]
 	t.Ctx.Data["Last"] = notes[len(notes)-1]
-	t.Ctx.Template = "notes"
+
+	notebooks := []*models.Notebook{}
+	t.Ctx.DB.Order("created_at desc").Find(&notebooks)
+	t.Ctx.Data["NotebooksList"] = notebooks[:len(notebooks)-1]
+	t.Ctx.Data["NotebooksLast"] = notebooks[len(notebooks)-1]
+
+	t.Ctx.Template = "data.json"
 	t.JSON(http.StatusOK)
 }
 func (t *Note) GetOneNote() {

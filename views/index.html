@@ -158,7 +158,6 @@ function pageReloaded(){
                 id=window.location.hash.split("/")[1];
                 $("#noteform-dellink").show()
                 $("#noteform-dellink").prop("href", "api/delete-note/"+id)
-                //TODO: lad this note data via one-note api method
                 setTimeout(function(){
                     $.getJSON( "api/get-one/"+id, function( data ) {
                         $("#noteform-title").val(data.title)
