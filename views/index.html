@@ -141,6 +141,8 @@ showdown.setFlavor('github');
 
 function pageReloaded(){
     $("#noteform").hide()
+    database = {notebooks:[],notes:[]};
+    $("#content").html("")
 
 	var action = window.location.hash.split("/")[0];
     switch (action){

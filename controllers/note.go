@@ -68,7 +68,7 @@ func (t *Note) Delete() {
 		return
 	}
 	t.Ctx.DB.Delete(&models.Note{ID: ID})
-	t.Ctx.Redirect("/", http.StatusFound)
+	t.Ctx.Redirect("/#notes", http.StatusFound)
 }
 
 func NewNote() controller.Controller {
