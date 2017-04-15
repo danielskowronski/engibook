@@ -6,12 +6,12 @@
 	<title>EngiBook</title>
 	<link href="https://fonts.googleapis.com/css?family=Ubuntu Mono:400,700" rel="stylesheet">
     <script src="https://cdn.rawgit.com/showdownjs/showdown/1.6.4/dist/showdown.min.js"></script>
-    <script src="assets/jquery-3.1.1.min.js"></script>
-	<script src="assets/pace.min.js"></script>
-	<link rel="stylesheet" href="assets/pure-min.css">
-	<link rel="stylesheet" href="assets/side-menu.css">
-    <link rel="stylesheet" href="assets/master.css">
-	<link rel="stylesheet" href="assets/pace.css">
+    <script src="static/assets/jquery-3.1.1.min.js"></script>
+	<script src="static/assets/pace.min.js"></script>
+	<link rel="stylesheet" href="static/assets/pure-min.css">
+	<link rel="stylesheet" href="static/assets/side-menu.css">
+    <link rel="stylesheet" href="static/assets/master.css">
+	<link rel="stylesheet" href="static/assets/pace.css">
 </head>
 
 <body>
@@ -69,7 +69,7 @@
 	</div>
 </div>
 
-<script src="assets/ui.js"></script>
+<script src="static/assets/ui.js"></script>
 <script>
 var database = {notebooks:[],notes:[]}; //locally laoded database
 
@@ -172,7 +172,7 @@ function pageReloaded(){
     }
 
     Pace.start();
-	$.getJSON( "mock/data.json", function( data ) {
+	$.getJSON( "notes.json", function( data ) {
         database.notebooks = data.notebooks;
         $("#notebooks").html("")
         $("#notebooks").append('<li class="pure-menu-item"><a href="javascript:filterByNotebook(-1)" class="pure-menu-link">%all%</a></li>')

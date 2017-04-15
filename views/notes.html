@@ -1,0 +1,19 @@
+{ 
+	"notebooks": [
+		{"id": 0, "title": "queries", "deleted": false},
+		{"id": 1, "title": "oneliners", "deleted": false},
+		{"id": 2, "title": "configs", "deleted": false},
+		{"id": 3, "title": "workflows", "deleted": false},
+		{"id": 4, "title": "randoms", "deleted": true}
+	],
+	"notes": [
+
+	{{range $k,$v:=.List}}
+		{"id": {{$v.ID}}, "notebook": {{$v.NotebookID}}, "title": "{{$v.Title}}", "body": "{{$v.Body}}", "deleted":false },
+	{{end}}
+		{"id": {{.Last.ID}}, "notebook": {{.Last.NotebookID}}, "title": "{{.Last.Title}}", "body": "{{.Last.Body}}", "deleted":false }
+
+
+
+	]
+}

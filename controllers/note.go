@@ -3,7 +3,6 @@ package controllers
 import (
 	"net/http"
 	"strconv"
-
 	"github.com/gernest/utron/controller"
 	"github.com/gorilla/schema"
 	"../models"
@@ -17,11 +16,16 @@ type Note struct {
 }
 
 func (t *Note) Home() {
-	notes := []*models.Note{}
-	t.Ctx.DB.Order("created_at desc").Find(&notes)
-	t.Ctx.Data["List"] = notes
 	t.Ctx.Template = "index"
 	t.HTML(http.StatusOK)
+}
+func (t *Note) GetAll() {
+	notes := []*models.Note{}
+	t.Ctx.DB.Order("created_at desc").Find(&notes)
+	t.Ctx.Data["List"] = notes[:len(notes)-1]
+	t.Ctx.Data["Last"] = notes[len(notes)-1]
+	t.Ctx.Template = "notes"
+	t.JSON(http.StatusOK)
 }
 
 func (t *Note) Create() {
@@ -56,8 +60,9 @@ func NewNote() controller.Controller {
 	return &Note{
 		Routes: []string{
 			"get;/;Home",
-			"post;/create;Create",
-			"get;/delete/{id};Delete",
+			"get;/notes.json;GetAll",
+			//"post;/create;Create",
+			//"get;/delete/{id};Delete",
 		},
 	}
 }

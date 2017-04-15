@@ -9,7 +9,7 @@ type Note struct {
 	Title      string    `schema:"title"`
 	Body       string    `schema:"body"`
 	Tags       string    `schema:"tags"`
-	CategoryID int       `schema:"category_id"`
-	CreatedAt time.Time `schema:"-"`
-	UpdatedAt time.Time `schema:"-"`
+	NotebookID int       `schema:"notebook_id"`
+	CreatedAt time.Time  `schema:"-"`
+	UpdatedAt time.Time  `schema:"-"`
 }
