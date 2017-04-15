@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>EngiBook</title>
 	<link href="https://fonts.googleapis.com/css?family=Ubuntu Mono:400,700" rel="stylesheet">
+    <script src="https://cdn.rawgit.com/showdownjs/showdown/1.6.4/dist/showdown.min.js"></script>
     <script src="assets/jquery-3.1.1.min.js"></script>
 	<script src="assets/pace.min.js"></script>
 	<link rel="stylesheet" href="assets/pure-min.css">
@@ -107,9 +108,11 @@ function expandOrCollapseNote(caller){
     }
 }
 function pageReloaded(){
+    var converter = new showdown.Converter();
+
 	var action = window.location.hash.split("/")[0];
     Pace.start();
-	$.getJSON( "mock/data_big.json", function( data ) {
+	$.getJSON( "mock/data.json", function( data ) {
         database.notebooks = data.notebooks;
         $("#notebooks").html("")
         $("#notebooks").append('<li class="pure-menu-item"><a href="javascript:filterByNotebook(-1)" class="pure-menu-link">%all%</a></li>')
@@ -123,7 +126,7 @@ function pageReloaded(){
             $(".content").append('<div class="noteEntry" data-notebook="'+val.notebook+'">'+
                 '<div class="noteTitle" onClick="expandOrCollapseNote(this)"> ['+notebookName+"] "+val.title+
                 '<a href="javascript:location.href=\'#editNote/'+key+'\'">[edit note]</a></div>'+
-                '<div class="noteBody">'+val.body+'</div>'+
+                '<div class="noteBody">'+converter.makeHtml(val.body)+'</div>'+
                 '</div>'
             )
         });
@@ -151,6 +154,8 @@ function pageReloaded(){
 	}
 
     filterByNotebook(-1);
+
+    
 }
 
 $(function() { pageReloaded(); });
