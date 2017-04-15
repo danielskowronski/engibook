@@ -27,8 +27,23 @@ func (t *Note) GetAll() {
 	t.Ctx.Template = "notes"
 	t.JSON(http.StatusOK)
 }
+func (t *Note) GetOneNote() {
+	NoteID := t.Ctx.Params["id"]
+	ID, err := strconv.Atoi(NoteID)
+	if err != nil {
+		t.Ctx.Data["Message"] = err.Error()
+		t.Ctx.Template = "error"
+		t.HTML(http.StatusInternalServerError)
+		return
+	}
+	Note := &models.Note{}
+	t.Ctx.DB.Where("id = ?", ID).Find(&Note)
+	t.Ctx.Data["Last"] = Note
+	t.Ctx.Template = "single"
+	t.JSON(http.StatusOK)
+}
 
-func (t *Note) Create() {
+func (t *Note) Modify() {
 	Note := &models.Note{}
 	req := t.Ctx.Request()
 	_ = req.ParseForm()
@@ -60,9 +75,10 @@ func NewNote() controller.Controller {
 	return &Note{
 		Routes: []string{
 			"get;/;Home",
-			"get;/notes.json;GetAll",
-			//"post;/create;Create",
-			//"get;/delete/{id};Delete",
+			"get;/api/data.json;GetAll",
+			"get;/api/get-one/{id};GetOneNote",
+			"post;/api/modify-note/{id};Modify",
+			"get;/api/delete-note/{id};Delete",
 		},
 	}
 }

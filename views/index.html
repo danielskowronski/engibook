@@ -23,12 +23,11 @@
 
 	<ul class="pure-menu-list">
 		<!--<li class="pure-menu-item"><a href="#tags" class="pure-menu-link">tags</a></li> TODO-->
-        <li class="pure-menu-item"><a href="#editNote" class="pure-menu-link">touch note</a></li>
+        <li class="pure-menu-item"><a href="#editNote/new" class="pure-menu-link">touch note</a></li>
         
 
 		notebooks:
 		<div id="notebooks">
-            <!--<li class="pure-menu-item"><a href="#notebook/$id" class="pure-menu-link">$title</a></li>-->
 		</div>
 
 		system:
@@ -43,8 +42,6 @@
         <form class="pure-form">
             <input id="searchForm" class="pure-input-1-3" type="text" placeholder="search term"> 
             <input id="regexSearchEnabled" type="checkbox"> regex
-            |
-            <a href="#editNote/new">[new note]</a>
    
         </form>
 
@@ -59,12 +56,15 @@
 
         <div id="noteform" class="content">
             <button onClick="saveNote()">Save!</button>
+            | 
+            <a id="noteform-dellink" onClick="return confirm('Are you sure?')" href=""><span style="color: red">Delete!</span></a>
             <table border=0>
                 <tr><td>Title:</td><td><input type="text" id="noteform-title" size="60" /></td></tr>
                 <tr><td>Notebook:</td><td><select id="noteform-notebook"></select></td></tr>
                 <tr><td style="vertical-align: top">Body:</td><td><textarea id="noteform-body" cols="59" rows="10"></textarea></td></tr>
                 <tr><td style="vertical-align: top">Preview:</td><td><div id="noteform-preview"></div></td></tr>
             </table>
+
         </div>
 	</div>
 </div>
@@ -78,8 +78,7 @@ function saveNote(){
     if (hash.length<2) return;
     id=hash[1];
 
-    $.post( "mock/update", { 'note': {
-        'id':id, 
+    $.post( "api/modify-note/"+id, { 'note': {
         'title': $("#noteform-title").val(),
         'notebook': $("#noteform-notebook").val(),
         'body': $("#noteform-body").val()
@@ -154,7 +153,19 @@ function pageReloaded(){
             $("#noteform").show()
             if (window.location.hash.split("/")[1]!="new"){
                 id=window.location.hash.split("/")[1];
+                $("#noteform-dellink").show()
+                $("#noteform-dellink").prop("href", "api/delete-note/"+id)
                 //TODO: lad this note data via one-note api method
+                setTimeout(function(){
+                    $.getJSON( "api/get-one/"+id, function( data ) {
+                        $("#noteform-title").val(data.title)
+                        $("#noteform-body").val(data.body)
+                        $("#noteform-notebook").val(data.notebook)
+                        $("#noteform-preview").html(converter.makeHtml($("#noteform-body").val()))
+                    });
+                }, 250)
+            } else {
+                $("#noteform-dellink").hide()
             }
 
             break;
@@ -172,7 +183,7 @@ function pageReloaded(){
     }
 
     Pace.start();
-	$.getJSON( "notes.json", function( data ) {
+	$.getJSON( "api/data.json", function( data ) {
         database.notebooks = data.notebooks;
         $("#notebooks").html("")
         $("#notebooks").append('<li class="pure-menu-item"><a href="javascript:filterByNotebook(-1)" class="pure-menu-link">%all%</a></li>')
@@ -187,7 +198,7 @@ function pageReloaded(){
                 var notebookName = (database.notebooks[val.notebook]).title
                 $("#content").append('<div class="noteEntry" data-notebook="'+val.notebook+'">'+
                     '<div class="noteTitle" onClick="expandOrCollapseNote(this)"> ['+notebookName+"] "+val.title+
-                    '<a href="#editNote/'+key+'">[edit note]</a></div>'+
+                    '<a href="#editNote/'+val.id+'">[edit note]</a></div>'+
                     '<div class="noteBody">'+converter.makeHtml(val.body)+'</div>'+
                     '</div>'
                 )
