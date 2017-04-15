@@ -43,6 +43,8 @@
         <form class="pure-form">
             <input id="searchForm" class="pure-input-1-3" type="text" placeholder="search term"> 
             <input id="regexSearchEnabled" type="checkbox"> regex
+            |
+            <a href="#editNote/new">[new note]</a>
    
         </form>
 
@@ -150,6 +152,11 @@ function pageReloaded(){
             updateTitle("vi note","add/edit note")
             $("#content").html("")
             $("#noteform").show()
+            if (window.location.hash.split("/")[1]!="new"){
+                id=window.location.hash.split("/")[1];
+                //TODO: lad this note data via one-note api method
+            }
+
             break;
         case "#notebooks": //TODO: invent better route name
             updateTitle("vi notebooks","manages all notebooks, even deleted")
