@@ -79,9 +79,9 @@ function saveNote(){
     id=hash[1];
 
     $.post( "api/modify-note/"+id, { 'note': {
-        'title': $("#noteform-title").val(),
+        'title': $("#noteform-title").val().replace(/\n/g, "\\n"),
         'notebook': $("#noteform-notebook").val(),
-        'body': $("#noteform-body").val()
+        'body': $("#noteform-body").val().replace(/\n/g, "\\n")
     } } );
 
 }

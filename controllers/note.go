@@ -45,17 +45,22 @@ func (t *Note) GetOneNote() {
 
 func (t *Note) Modify() {
 	Note := &models.Note{}
-	req := t.Ctx.Request()
-	_ = req.ParseForm()
-	if err := decoder.Decode(Note, req.PostForm); err != nil {
+	NoteID := t.Ctx.Params["id"]
+	ID, err := strconv.Atoi(NoteID)
+	if err != nil {
 		t.Ctx.Data["Message"] = err.Error()
 		t.Ctx.Template = "error"
 		t.HTML(http.StatusInternalServerError)
 		return
 	}
-
-	t.Ctx.DB.Create(Note)
-	t.Ctx.Redirect("/", http.StatusFound)
+	t.Ctx.DB.Where("id = ?", ID).Find(&Note)
+	req := t.Ctx.Request()
+	_ = req.ParseForm()
+	Note.Body=req.PostForm["note[body]"][0]
+	Note.Title=req.PostForm["note[title]"][0]
+	Note.NotebookID,_=strconv.Atoi(req.PostForm["note[notebook]"][0])
+	t.Ctx.DB.Save(&Note)
+	t.Ctx.Redirect("/#editNote/"+NoteID, http.StatusFound)
 }
 
 func (t *Note) Delete() {
