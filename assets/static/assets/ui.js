@@ -1,46 +1,45 @@
-(function (window, document) {
+function updateTitle(title, descr){
+    $("#title").html(title)
+    $("#descr").html(descr)
+}
 
-    var layout   = document.getElementById('layout'),
-        menu     = document.getElementById('menu'),
-        menuLink = document.getElementById('menuLink'),
-        content  = document.getElementById('main');
-
-    function toggleClass(element, className) {
-        var classes = element.className.split(/\s+/),
-            length = classes.length,
-            i = 0;
-
-        for(; i < length; i++) {
-          if (classes[i] === className) {
-            classes.splice(i, 1);
-            break;
-          }
-        }
-        // The className is not found
-        if (length === classes.length) {
-            classes.push(className);
-        }
-
-        element.className = classes.join(' ');
+function filterByNotebook(id){
+    window.location.hash = "#notes"
+    $("#content").html();
+    if (id>=0){
+        updateTitle(database.notebooks[id].title,"")
+        $(".noteEntry").hide()
+        $(".noteEntry[data-notebook='"+id+"']").show()
     }
-
-    function toggleAll(e) {
-        var active = 'active';
-
-        e.preventDefault();
-        toggleClass(layout, active);
-        toggleClass(menu, active);
-        toggleClass(menuLink, active);
+    else {
+        updateTitle("%all% notes index","")
+        $(".noteEntry").show()
     }
-
-    menuLink.onclick = function (e) {
-        toggleAll(e);
-    };
-
-    content.onclick = function(e) {
-        if (menu.className.indexOf('active') !== -1) {
-            toggleAll(e);
+}
+function filterByString(serach){
+    $(".noteEntry").hide();
+    $.each( $(".noteEntry"), function( key, val ) {
+        var body = $(val).html()
+        if ($("#regexSearchEnabled").prop('checked')){
+            if (body.match(serach)){
+                $(val).show()
+            }
+        }       
+        else {
+            if (body.indexOf(serach)!=-1){
+                $(val).show()
+            }
         }
-    };
-
-}(this, this.document));
+    });
+}
+function expandOrCollapseNote(caller){
+    var target = $(caller).parent();
+    if (!target.prop("data-expanded") || target.prop("data-expanded") =="false"){
+        target.prop("data-expanded","true")
+        target.css("max-height","none")
+    }
+    else {
+        target.prop("data-expanded","false")
+        target.css("max-height","50px")
+    }
+}

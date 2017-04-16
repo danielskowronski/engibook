@@ -18,3 +18,10 @@ html, body{
 #regexSearchEnabled{
 	transform: scale(1.5);
 }
+.notebookEditor{
+	border: 1px solid #aaa;
+	font-weight: bold;
+}
+.notebookEditor a{
+	font-weight: normal;
+}

@@ -1,17 +1,14 @@
 <!doctype html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>EngiBook</title>
-	<link href="https://fonts.googleapis.com/css?family=Ubuntu Mono:400,700" rel="stylesheet">
-    <script src="https://cdn.rawgit.com/showdownjs/showdown/1.6.4/dist/showdown.min.js"></script>
-    <script src="static/assets/jquery-3.1.1.min.js"></script>
-	<script src="static/assets/pace.min.js"></script>
-	<link rel="stylesheet" href="static/assets/pure-min.css">
-	<link rel="stylesheet" href="static/assets/side-menu.css">
-    <link rel="stylesheet" href="static/assets/master.css">
-	<link rel="stylesheet" href="static/assets/pace.css">
+	<link href="https://fonts.googleapis.com/css?family=Ubuntu Mono:400,700" rel="stylesheet" />
+	<link rel="stylesheet" href="static/assets/lib/pure-min.css" />
+	<link rel="stylesheet" href="static/assets/lib/side-menu.css" />
+    <link rel="stylesheet" href="static/assets/lib/pace.css" />
+    <link rel="stylesheet" href="static/assets/master.css" />
 </head>
 
 <body>
@@ -25,16 +22,15 @@
 		<!--<li class="pure-menu-item"><a href="#tags" class="pure-menu-link">tags</a></li> TODO-->
         <li class="pure-menu-item"><a href="#editNote/new" class="pure-menu-link">touch note</a></li>
         
-
 		notebooks:
 		<div id="notebooks">
+            <a href="#" class="pure-menu-link">...loading...</a>
 		</div>
 
 		system:
 		<li class="pure-menu-item"><a href="#notebooks" class="pure-menu-link">vi notebooks</a></li>
 		<!--<li class="pure-menu-item"><a href="#" class="pure-menu-link">vi general</a></li> TODO-->
 		<li class="pure-menu-item"><a href="#man" class="pure-menu-link">man</a></li>
-
 	</ul>
 	</div></div>
 
@@ -42,21 +38,18 @@
         <form class="pure-form">
             <input id="searchForm" class="pure-input-1-3" type="text" placeholder="search term"> 
             <input id="regexSearchEnabled" type="checkbox"> regex
-   
         </form>
 
 		<div class="header">
-			<h1 id="title">mode selected</h1>
-			<h2 id="descr">few words about this mode</h2>
+			<h1 id="title">...loading...</h1>
+			<h2 id="descr">...</h2>
 		</div>
 
-		<div id="content" class="content">
-            
+		<div id="content" class="content">     
 		</div>
 
-        <div id="noteform" class="content">
+        <div id="noteform" class="content" style="display: none">
             <button onClick="saveNote()">Save!</button>
-            | 
             <a id="noteform-dellink" onClick="return confirm('Are you sure?')" href=""><span style="color: red">Delete!</span></a>
             <table border=0>
                 <tr><td>Title:</td><td><input type="text" id="noteform-title" size="60" /></td></tr>
@@ -67,184 +60,23 @@
 
         </div>
 
-        <div id="notebookform" class="content">
+        <div id="notebookform" class="content" style="display: none">
             <button onClick="addNotebook()">New notebook</button>
             <div id="notebookform-list"></div>
-
-    
         </div>
 	</div>
 </div>
 
+
+<script src="static/assets/lib/showdown.min.js"></script>
+<script src="static/assets/lib/jquery-3.1.1.min.js"></script>
+<script src="static/assets/lib/pace.min.js"></script>
+<script src="static/assets/lib/pure-ui.js"></script>
+
+<script src="static/assets/main.js"></script>
+<script src="static/assets/api.js"></script>
 <script src="static/assets/ui.js"></script>
-<script>
-var database = {notebooks:[],notes:[]}; //locally laoded database
-
-function saveNote(){
-    var hash = window.location.hash.split("/")
-    if (hash.length<2) return;
-    id=hash[1];
-
-    $.post( "api/modify-note/"+id, { 'note': {
-        'title': $("#noteform-title").val().replace(/\n/g, "\\n"),
-        'notebook': $("#noteform-notebook").val(),
-        'body': $("#noteform-body").val().replace(/\n/g, "\\n")
-    } } );
-
-}
-
-function updateTitle(title, descr){
-    $("#title").html(title)
-    $("#descr").html(descr)
-}
-function filterByNotebook(id){
-    window.location.hash = "#notes"
-    $("#content").html();
-    if (id>=0){
-        updateTitle(database.notebooks[id].title,"")
-        $(".noteEntry").hide()
-        $(".noteEntry[data-notebook='"+id+"']").show()
-    }
-    else {
-        updateTitle("%all% notes index","")
-        $(".noteEntry").show()
-    }
- 
-
-}
-function filterByString(serach){
-    $(".noteEntry").hide();
-    $.each( $(".noteEntry"), function( key, val ) {
-        var body = $(val).html()
-        if ($("#regexSearchEnabled").prop('checked')){
-            if (body.match(serach)){
-                $(val).show()
-            }
-        }       
-        else {
-            if (body.indexOf(serach)!=-1){
-                $(val).show()
-            }
-        }
-    });
-}
-function expandOrCollapseNote(caller){
-    var target = $(caller).parent();
-    if (!target.prop("data-expanded") || target.prop("data-expanded") =="false"){
-        target.prop("data-expanded","true")
-        target.css("max-height","none")
-    }
-    else {
-        target.prop("data-expanded","false")
-        target.css("max-height","50px")
-    }
-}
-
-var converter = new showdown.Converter();
-converter.setOption('simplifiedAutoLink', 'true');
-converter.setOption('strikethrough', 'true');
-converter.setOption('simpleLineBreaks', 'true');
-showdown.setFlavor('github');
-
-function pageReloaded(){
-    $("#noteform").hide()
-    $("#notebookform").hide()
-
-    database = {notebooks:[],notes:[]};
-    $("#content").html("")
-    $("#noteform-notebook").html("")
-
-	var action = window.location.hash.split("/")[0];
-    switch (action){
-        case "#trash"://TODO 
-            updateTitle("trash - not implemented","shows all notes")
-            break;
-        case "#editNote":
-            updateTitle("vi note","add/edit note")
-            $("#content").html("")
-            $("#noteform").show()
-            if (window.location.hash.split("/")[1]!="new"){
-                id=window.location.hash.split("/")[1];
-                $("#noteform-dellink").show()
-                $("#noteform-dellink").prop("href", "api/delete-note/"+id)
-                setTimeout(function(){
-                    $.getJSON( "api/get-one/"+id, function( data ) {
-                        $("#noteform-title").val(data.title)
-                        $("#noteform-body").val(data.body)
-                        $("#noteform-notebook").val(data.notebook)
-                        $("#noteform-preview").html(converter.makeHtml($("#noteform-body").val()))
-                    });
-                }, 250)
-            } else {
-                $("#noteform-dellink").hide()
-            }
-
-            break;
-        case "#notebooks": //TODO: invent better route name
-            updateTitle("vi notebooks","manages notebooks")
-            $("#content").html("")
-            $("#notebookform").show()
-            break;    
-        case "#man": //TODO: invent better route name
-            updateTitle("man engibook","basic help")
-            $("#content").html("notes (markdown/text entities with titles) belongs to notebooks<br />you can filter notes by notebooks or search by substring or regex")
-            break;              
-        default:
-            window.location.hash = "#notes"
-            filterByNotebook(-1);
-            break;
-    }
-
-    Pace.start();
-	$.getJSON( "api/data.json", function( data ) {
-        database.notebooks = data.notebooks;
-        $("#notebooks").html("")
-        $("#notebooks").append('<li class="pure-menu-item"><a href="javascript:filterByNotebook(-1)" class="pure-menu-link">%all%</a></li>')
-        $.each( database.notebooks, function( key, val ) {
-            $("#notebooks").append('<li class="pure-menu-item"><a href="javascript:filterByNotebook('+key+')"  class="pure-menu-link">'+val.title+'</a></li>')
-            $("#noteform-notebook").append('<option value='+key+'>'+val.title+'</option>')
-        });
-        
-        database.notes = data.notes;
-        if (window.location.hash == "#notes") {
-            $.each( database.notes, function( key, val ) {
-                var notebookName = (database.notebooks[val.notebook]).title
-                $("#content").append('<div class="noteEntry" data-notebook="'+val.notebook+'">'+
-                    '<div class="noteTitle" onClick="expandOrCollapseNote(this)"> ['+notebookName+"] "+val.title+
-                    '<a href="#editNote/'+val.id+'">[edit note]</a></div>'+
-                    '<div class="noteBody">'+converter.makeHtml(val.body)+'</div>'+
-                    '</div>'
-                )
-            });
-        }
-
-        Pace.stop();
-	});
-    
-}
-
-$(function() { pageReloaded(); });
-window.onhashchange = pageReloaded;
-
-$("form").bind("input change propertychange", function (evt) {
-    if (window.event && event.type == "propertychange" && event.propertyName != "value")
-        return;
-    window.clearTimeout($(this).data("timeout"));
-    $(this).data("timeout", setTimeout(function () {
-        filterByString($('#searchForm').val())
-    }, 100));
-});
-
-$("#noteform-body").bind("input change propertychange", function (evt) {
-    if (window.event && event.type == "propertychange" && event.propertyName != "value")
-        return;
-    window.clearTimeout($(this).data("timeout"));
-    $(this).data("timeout", setTimeout(function () {
-        $("#noteform-preview").html(converter.makeHtml($("#noteform-body").val()))
-    }, 100));
-});
-</script>
-
+<script src="static/assets/router.js"></script>
 	
 </body>
 </html>

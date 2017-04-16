@@ -2,8 +2,8 @@
 	"app_name": "engibook",
 	"base_url": "http://10.64.73.8:9999",
 	"port": 9999,
-	"static_dir": "/assets/static",
-	"view_dir": "/assets/views",
+	"static_dir": "assets/static",
+	"view_dir": "assets/views",
 	"database": "sqlite3",
 	"database_conn": "database.sqlite",
 	"verbose": true
