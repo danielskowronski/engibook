@@ -43,7 +43,7 @@ func (t *Note) GetOneNote() {
 	Note := &models.Note{}
 	t.Ctx.DB.Where("id = ?", ID).Find(&Note)
 	t.Ctx.Data["Last"] = Note
-	t.Ctx.Template = "single"
+	t.Ctx.Template = "single.json"
 	t.JSON(http.StatusOK)
 }
 
@@ -69,7 +69,10 @@ func (t *Note) Modify() {
 	Note.Title=req.PostForm["note[title]"][0]
 	Note.NotebookID,_=strconv.Atoi(req.PostForm["note[notebook]"][0])
 	t.Ctx.DB.Save(&Note)
-	t.Ctx.Redirect("/#editNote/"+NoteID, http.StatusFound)
+
+	t.Ctx.Data["Url"] = "/#editNote/"+strconv.Itoa(Note.ID)
+	t.Ctx.Template = "redirect.json"
+	t.JSON(http.StatusOK)
 }
 
 func (t *Note) Delete() {

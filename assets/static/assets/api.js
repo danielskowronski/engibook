@@ -7,7 +7,9 @@ function saveNote(){
         'title': $("#noteform-title").val().replace(/\n/g, "\\n"),
         'notebook': $("#noteform-notebook").val(),
         'body': $("#noteform-body").val().replace(/\n/g, "\\n")
-    } } );
+    } } ).done(function( data ) {
+        window.location.replace(data.url);
+    });
 
 }
 
