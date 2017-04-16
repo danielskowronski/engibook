@@ -1,19 +1,10 @@
 { 
 	"notebooks": [
-	{{range $k,$v:=.NotebooksList}}
-		{"id": {{$v.ID}}, "title": "{{$v.Title}}" },
-	{{end}}
-		{"id": {{.NotebooksLast.ID}}, "title": "{{.NotebooksLast.Title}}" }
-
+		{}{{range $k,$v:=.NotebooksList}}
+		,{"id": {{$v.ID}}, "title": "{{$v.Title}}" }{{end}}
 	],
 	"notes": [
-
-	{{range $k,$v:=.List}}
-		{"id": {{$v.ID}}, "notebook": {{$v.NotebookID}}, "title": "{{$v.Title}}", "body": "{{$v.Body}}", "deleted":false },
-	{{end}}
-		{"id": {{.Last.ID}}, "notebook": {{.Last.NotebookID}}, "title": "{{.Last.Title}}", "body": "{{.Last.Body}}", "deleted":false }
-
-
-
+		{}{{range $k,$v:=.List}}
+		,{"id": {{$v.ID}}, "notebook": {{$v.NotebookID}}, "title": "{{$v.Title}}", "body": "{{$v.Body}}" } {{end}}
 	]
 }

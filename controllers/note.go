@@ -22,13 +22,11 @@ func (t *Note) Home() {
 func (t *Note) GetAll() {
 	notes := []*models.Note{}
 	t.Ctx.DB.Order("created_at desc").Find(&notes)
-	t.Ctx.Data["List"] = notes[:len(notes)-1]
-	t.Ctx.Data["Last"] = notes[len(notes)-1]
+	t.Ctx.Data["List"] = notes
 
 	notebooks := []*models.Notebook{}
 	t.Ctx.DB.Order("created_at desc").Find(&notebooks)
-	t.Ctx.Data["NotebooksList"] = notebooks[:len(notebooks)-1]
-	t.Ctx.Data["NotebooksLast"] = notebooks[len(notebooks)-1]
+	t.Ctx.Data["NotebooksList"] = notebooks
 
 	t.Ctx.Template = "data.json"
 	t.JSON(http.StatusOK)

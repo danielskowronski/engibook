@@ -54,6 +54,7 @@ function pageReloaded(){
         $("#notebookform-list").html("")
         $("#notebooks").append('<li class="pure-menu-item"><a href="javascript:filterByNotebook(-1)" class="pure-menu-link">%all%</a></li>')
         $.each( database.notebooks, function( key, val ) {
+            if (!isFinite(val.id)) return;
             $("#notebooks").append('<li class="pure-menu-item"><a href="javascript:filterByNotebook('+val.id+')"  class="pure-menu-link">'+val.title+'</a></li>')
             $("#noteform-notebook").append('<option value='+val.id+'>'+val.title+'</option>')
             $("#notebookform-list").append('<div class="notebookEditor">'+val.title+' <a onClick="renameNotebook('+val.id+')">[rename]</a> <a style="color: red" onClick="deleteNotebook('+val.id+')">[delete]</a> </div>')
@@ -63,6 +64,7 @@ function pageReloaded(){
         database.notes = data.notes;
         if (window.location.hash == "#notes") {
             $.each( database.notes, function( key, val ) {
+                if (!isFinite(val.id)) return;
                 var notebookName = notebooksMap[val.notebook];
                 $("#content").append('<div class="noteEntry" data-notebook="'+val.notebook+'">'+
                     '<div class="noteTitle" onClick="expandOrCollapseNote(this)"> ['+notebookName+"] "+val.title+
