@@ -66,6 +66,13 @@
             </table>
 
         </div>
+
+        <div id="notebookform" class="content">
+            <button onClick="addNotebook()">New notebook</button>
+            <div id="notebookform-list"></div>
+
+    
+        </div>
 	</div>
 </div>
 
@@ -141,6 +148,8 @@ showdown.setFlavor('github');
 
 function pageReloaded(){
     $("#noteform").hide()
+    $("#notebookform").hide()
+
     database = {notebooks:[],notes:[]};
     $("#content").html("")
     $("#noteform-notebook").html("")
@@ -172,8 +181,10 @@ function pageReloaded(){
 
             break;
         case "#notebooks": //TODO: invent better route name
-            updateTitle("vi notebooks","manages all notebooks, even deleted")
-            break;      
+            updateTitle("vi notebooks","manages notebooks")
+            $("#content").html("")
+            $("#notebookform").show()
+            break;    
         case "#man": //TODO: invent better route name
             updateTitle("man engibook","basic help")
             $("#content").html("notes (markdown/text entities with titles) belongs to notebooks<br />you can filter notes by notebooks or search by substring or regex")

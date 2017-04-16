@@ -10,8 +10,8 @@ import (
 	"./models"
 )
 
-func main() {
 
+func main() {
 	app, err := utron.NewMVC()
 	if err != nil {
 		log.Fatal(err)
