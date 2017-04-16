@@ -57,13 +57,13 @@ function pageReloaded(){
             $("#notebooks").append('<li class="pure-menu-item"><a href="javascript:filterByNotebook('+val.id+')"  class="pure-menu-link">'+val.title+'</a></li>')
             $("#noteform-notebook").append('<option value='+val.id+'>'+val.title+'</option>')
             $("#notebookform-list").append('<div class="notebookEditor">'+val.title+' <a onClick="renameNotebook('+val.id+')">[rename]</a> <a style="color: red" onClick="deleteNotebook('+val.id+')">[delete]</a> </div>')
-
+            notebooksMap[val.id]=val.title;
         });
         
         database.notes = data.notes;
         if (window.location.hash == "#notes") {
             $.each( database.notes, function( key, val ) {
-                var notebookName = (database.notebooks[val.notebook]).title
+                var notebookName = notebooksMap[val.notebook];
                 $("#content").append('<div class="noteEntry" data-notebook="'+val.notebook+'">'+
                     '<div class="noteTitle" onClick="expandOrCollapseNote(this)"> ['+notebookName+"] "+val.title+
                     '<a href="#editNote/'+val.id+'">[edit note]</a></div>'+

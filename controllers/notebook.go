@@ -33,7 +33,7 @@ func (t *Notebook) Modify() {
 	
 	req := t.Ctx.Request()
 	_ = req.ParseForm()
-	Notebook.Title=req.PostForm["Notebook[title]"][0]
+	Notebook.Title=req.PostForm["notebook[title]"][0]
 	t.Ctx.DB.Save(&Notebook)
 	t.Ctx.Redirect("/#editNotebook/"+NotebookID, http.StatusFound)
 }
@@ -47,6 +47,8 @@ func (t *Notebook) Delete() {
 		t.HTML(http.StatusInternalServerError)
 		return
 	}
+	// we must delete all child notes first!
+	t.Ctx.DB.Delete(&models.Note{}, "notebook_id = ?", ID)
 	t.Ctx.DB.Delete(&models.Notebook{ID: ID})
 	t.Ctx.Redirect("/#notebooks", http.StatusFound)
 }

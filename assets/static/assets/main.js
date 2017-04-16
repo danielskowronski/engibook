@@ -1,4 +1,5 @@
 var database = {notebooks:[],notes:[]}; //locally laoded database
+var notebooksMap = {};
 
 var converter = new showdown.Converter();
 converter.setOption('simplifiedAutoLink', 'true');

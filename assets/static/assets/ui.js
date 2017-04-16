@@ -7,7 +7,7 @@ function filterByNotebook(id){
     window.location.hash = "#notes"
     $("#content").html();
     if (id>=0){
-        updateTitle(database.notebooks[id].title,"")
+        updateTitle(notebooksMap[id],"")
         $(".noteEntry").hide()
         $(".noteEntry[data-notebook='"+id+"']").show()
     }
